@@ -17,6 +17,8 @@
   "author": "Rafael Campos Teixeira",
   "license": "UNLICENSED",
   "dependencies": {
-    "node-fetch": "^3.3.2"
+    "desafio-2.1": "file:",
+    "node-fetch": "^3.3.2",
+    "prompt-sync": "^4.2.0"
   }
 }

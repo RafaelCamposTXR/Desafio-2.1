@@ -1,37 +1,27 @@
-import readline from 'readline';
+import promptSync from 'prompt-sync';
 import fetch from 'node-fetch';
 
+const prompt = promptSync();
 const API_BASE_URL = 'https://v6.exchangerate-api.com/v6/d2787cf06f3d7ffe2376f5ab/pair';
 
 class Conversor {
-  constructor() {
-    this.rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-  }
-
-  askQuestion(query) {
-    return new Promise((resolve) => this.rl.question(query, resolve));
-  }
-
   async getConversion(fromCurrency, toCurrency, amount) {
     const url = `${API_BASE_URL}/${fromCurrency}/${toCurrency}/${amount}`;
-      const response = await fetch(url);
-      const data = await response.json();
-      
-      if (data.result === 'error') {
-        throw new Error(`Erro na conversão: ${data['error-type']}`);
-      }
+    const response = await fetch(url);
+    const data = await response.json();
 
-      if (data.result !== 'success') {
-        throw new Error('Erro desconhecido na conversão.');
-      }
+    if (data.result === 'error') {
+      throw new Error(`Erro na conversão: ${data['error-type']}`);
+    }
 
-      return {
-        rate: data.conversion_rate,
-        convertedValue: data.conversion_result,
-      };
+    if (data.result !== 'success') {
+      throw new Error('Erro desconhecido na conversão.');
+    }
+
+    return {
+      rate: data.conversion_rate,
+      convertedValue: data.conversion_result,
+    };
   }
 
   validateInputs(fromCurrency, toCurrency, amount) {
@@ -49,11 +39,11 @@ class Conversor {
   async run() {
     while (true) {
       try {
-        const fromCurrency = (await this.askQuestion('Digite a moeda de origem (ou vazio para sair): ')).toUpperCase();
+        const fromCurrency = prompt('Digite a moeda de origem (ou vazio para sair): ').toUpperCase();
         if (fromCurrency === '') break;
 
-        const toCurrency = (await this.askQuestion('Digite a moeda de destino: ')).toUpperCase();
-        const amount = parseFloat(await this.askQuestion('Digite o valor a ser convertido: '));
+        const toCurrency = prompt('Digite a moeda de destino: ').toUpperCase();
+        const amount = parseFloat(prompt('Digite o valor a ser convertido: '));
 
         this.validateInputs(fromCurrency, toCurrency, amount);
 
@@ -66,7 +56,7 @@ class Conversor {
       }
     }
 
-    this.rl.close();
+    console.log('Programa encerrado.');
   }
 }
 
